@@ -1,0 +1,34 @@
+---
+layout: default
+title: Interviews
+---
+
+<h3>Overview</h3>
+<p>There are currently <strong><%= @site.posts.length %></strong> interviews in <strong><%= @site.categories.length %></strong> categories, mentioning <strong><%= @site.wares.length %></strong> bits of hardware and software.</p>
+
+<h4>By date</h4>
+<ul class="years">
+<% @site.archives.each do |year, data| %>
+  <li>
+    <a href="/interviews/<%= year %>/" title="View all interviews in <%= year %>."><strong><%= year %></strong></a>
+    <ul class="months">
+    <% %w{01 02 03 04 05 06 07 08 09 10 11 12}.each do |month| %>
+    <li>
+    <% if data[:months].include?(month) %>
+    <a href="/interviews/<%= year %>/<%= month %>/" title="View all interviews from <%= Time.mktime(year, month).strftime('%B') %> <%= year %>."><%= month %></a>
+    <% else %>
+    <%= month %>
+    <% end %>
+    </li>
+    <% end %>
+    </ul>
+  </li>
+<% end %>
+</ul>
+
+<h4>By category</h4>
+<ul class="categories all">
+<% @site.categories.keys.sort.each do |category| %>
+  <li><a href="/interviews/<%= category %>" rel="category" title="View all <%= category.capitalize %> interviews."><%= category %></a><li>
+<% end %>
+</ul>

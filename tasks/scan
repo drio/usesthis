@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+
+trap("SIGINT") { exit! }
+
+require 'trollop'
+require 'rubygems'
+require 'yaml'
+require 'link_checker'
+
+source_path = File.dirname(__dir__)
+$:.unshift(source_path)
+
+options = Trollop::options do
+  banner "Scan for broken or outdated links."
+  opt :type, "Either 'hardware', 'software' or 'links'", type: :string
+end
+
+Trollop::die :type, "must be either 'hardware', 'software' or 'links'" unless options[:type] =~ /^(hardware|software|links)$/
+
+glob = case options[:type]
+  when 'hardware'
+    File.join(source_path, 'data', 'wares', 'hardware', '*.yml')
+  when 'software'
+    File.join(source_path, 'data', 'wares', 'software', '*.yml')
+  when 'links'
+    File.join(source_path, 'data', 'links', '**', '*.yml')
+  end
+
+puts "Scanning:"
+
+Dir.glob(glob) do |path|
+  begin
+    data = YAML::load_file(path)
+    result = LinkChecker::check_uri(URI(data['url']), true)
+    needs_update = false
+
+    case result.class.to_s
+        when "LinkChecker::Redirect"
+          url = result.final_destination_uri_string
+
+          if url != data['url']
+            data['url'] = url
+            print "+"
+
+            needs_update = true
+          else
+            print "."
+          end
+        when "LinkChecker::Error"
+          data['url'] = 'FIX ME'
+          print "!"
+
+          needs_update = true
+        else
+          print "."
+        end
+
+    if needs_update
+      File.open(path, 'w') do |file|
+        file.write(YAML::dump(data))
+      end
+    end
+  rescue Exception => e
+  end
+end

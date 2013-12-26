@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+source_path = File.dirname(__dir__)
+$:.unshift(source_path)
+
+require 'lib/usesthis'
+
+site = UsesThis::Site.instance
+
+site.setup()
+site.register(UsesThis::Interview)
+
+begin
+  site.generate
+rescue Exception => e
+  puts "Error: #{e}"
+end
