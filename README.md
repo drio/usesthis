@@ -11,3 +11,38 @@ HELL YEAH! These are the questions I email people:
 	2) What hardware do you use?
 	3) And what software?
 	4) What would be your dream setup?
+
+#### structure:
+
+```
+config
+        config stuff: currently nginx conf
+data/links
+        community: other setup pages and personal.
+        It will go away?
+data/wares
+        yml descriptions for hardware and software.
+        referenced later on the interviews
+lib/
+        code that generates the site (uses salt gem)
+pages/
+        404, about, community, interview landing pages. (erb templating)
+posts/
+        Markdowns of the interviews. New interviews go here in the format:
+        2012-02-22-robert.bohnke.interview
+
+public/
+        images and stylesheets
+site/
+        static generated site.
+tasks/
+        scripts that use code in lib/ to perform ... tasks.
+templates/
+        Umm.. templates :)
+```
+
+#### tasks
+
+To build the site:
+
+`$ rm -rf site/ ; /usr/local/Cellar/ruby/2.0.0-p247/bin/ruby tasks/build && cd site && python3 -m http.server 7777`
